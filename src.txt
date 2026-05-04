@@ -1,0 +1,47 @@
+import { useState } from "react";
+
+const KEY = "reservations";
+
+const getData = () =>
+  JSON.parse(localStorage.getItem(KEY)) || [];
+
+const saveData = (data) =>
+  localStorage.setItem(KEY, JSON.stringify(data));
+
+export default function App() {
+  const [phone, setPhone] = useState("");
+  const data = getData();
+
+  const add = () => {
+    const newData = [
+      ...data,
+      { id: Date.now(), phone, status: "beklemede" }
+    ];
+    saveData(newData);
+    location.reload();
+  };
+
+  const approve = (id) => {
+    const newData = data.map(r =>
+      r.id === id ? { ...r, status: "onaylandi" } : r
+    );
+    saveData(newData);
+    location.reload();
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Joyfield Sistem</h1>
+
+      <input onChange={(e) => setPhone(e.target.value)} />
+      <button onClick={add}>Ekle</button>
+
+      {data.map(r => (
+        <div key={r.id}>
+          {r.phone} - {r.status}
+          <button onClick={() => approve(r.id)}>Onayla</button>
+        </div>
+      ))}
+    </div>
+  );
+}
